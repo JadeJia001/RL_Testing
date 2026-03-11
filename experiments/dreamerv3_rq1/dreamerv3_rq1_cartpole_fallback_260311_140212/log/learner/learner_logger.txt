@@ -1,0 +1,97 @@
+[2026-03-11 14:02:13][base_learner.py:373][INFO] [RANK0]: DI-engine DRL Policy
+DREAMERVAC(
+  (actor): ActionHead(
+    (_pre_layers): Sequential(
+      (0): Linear(in_features=1536, out_features=512, bias=False)
+      (1): LayerNorm((512,), eps=0.001, elementwise_affine=True)
+      (2): SiLU()
+      (3): Linear(in_features=512, out_features=512, bias=False)
+      (4): LayerNorm((512,), eps=0.001, elementwise_affine=True)
+      (5): SiLU()
+    )
+    (_dist_layer): Linear(in_features=512, out_features=2, bias=True)
+  )
+  (critic): DenseHead(
+    (_act): SiLU()
+    (mlp): Sequential(
+      (0): Linear(in_features=1536, out_features=512, bias=True)
+      (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+      (2): SiLU()
+      (3): Linear(in_features=512, out_features=512, bias=True)
+      (4): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+      (5): SiLU()
+    )
+    (mean_layer): Linear(in_features=512, out_features=255, bias=True)
+  )
+)
+[2026-03-11 14:02:14][base_learner.py:373][INFO] [RANK0]: === Training Iteration 0 Result ===
+[2026-03-11 14:02:14][learner_hook.py:232][INFO] 
++-------+------------------------+-----------------------+-----------------------+-----------------------+
+| Name  | normed_target_mean_avg | normed_target_std_avg | normed_target_min_avg | normed_target_max_avg |
++-------+------------------------+-----------------------+-----------------------+-----------------------+
+| Value | 0.000355               | 0.000101              | 0.000117              | 0.000643              |
++-------+------------------------+-----------------------+-----------------------+-----------------------+
++-------+-------------+-------------+-------------------+-------------------------+
+| Name  | EMA_005_avg | EMA_095_avg | actor_entropy_avg | actor_state_entropy_avg |
++-------+-------------+-------------+-------------------+-------------------------+
+| Value | 0.000001    | 0.000005    | 0.000145          | 0.000000                |
++-------+-------------+-------------+-------------------+-------------------------+
++-------+----------------+---------------+---------------+---------------+
+| Name  | value_mean_avg | value_std_avg | value_min_avg | value_max_avg |
++-------+----------------+---------------+---------------+---------------+
+| Value | 0.000000       | 0.000000      | 0.000000      | 0.000000      |
++-------+----------------+---------------+---------------+---------------+
++-------+-----------------+----------------+----------------+----------------+
+| Name  | target_mean_avg | target_std_avg | target_min_avg | target_max_avg |
++-------+-----------------+----------------+----------------+----------------+
+| Value | 0.000356        | 0.000101       | 0.000119       | 0.000644       |
++-------+-----------------+----------------+----------------+----------------+
++-------+----------------------+---------------------+---------------------+---------------------+
+| Name  | imag_reward_mean_avg | imag_reward_std_avg | imag_reward_min_avg | imag_reward_max_avg |
++-------+----------------------+---------------------+---------------------+---------------------+
+| Value | 0.000142             | 0.000008            | 0.000111            | 0.000165            |
++-------+----------------------+---------------------+---------------------+---------------------+
++-------+----------------------+---------------------+---------------------+---------------------+
+| Name  | imag_action_mean_avg | imag_action_std_avg | imag_action_min_avg | imag_action_max_avg |
++-------+----------------------+---------------------+---------------------+---------------------+
+| Value | 0.500000             | 0.500065            | 0.000000            | 1.000000            |
++-------+----------------------+---------------------+---------------------+---------------------+
++-------+---------------+----------------+-----------------+---------------------+
+| Name  | actor_ent_avg | actor_loss_avg | critic_loss_avg | actor_grad_norm_avg |
++-------+---------------+----------------+-----------------+---------------------+
+| Value | 0.483422      | -0.000094      | 2.048253        | 0.000157            |
++-------+---------------+----------------+-----------------+---------------------+
++-------+----------------------+
+| Name  | critic_grad_norm_avg |
++-------+----------------------+
+| Value | 2.755287             |
++-------+----------------------+
+
+[2026-03-11 14:02:14][base_learner.py:373][INFO] [RANK0]: learner save ckpt in ./dreamerv3_rq1_cartpole_fallback_260311_140212/ckpt/iteration_0.pth.tar
+[2026-03-11 14:02:16][base_learner.py:373][INFO] [RANK0]: learner save ckpt in ./dreamerv3_rq1_cartpole_fallback_260311_140212/ckpt/iteration_3.pth.tar
+[2026-03-11 14:02:17][base_learner.py:373][INFO] [RANK0]: DI-engine DRL Policy
+DREAMERVAC(
+  (actor): ActionHead(
+    (_pre_layers): Sequential(
+      (0): Linear(in_features=1536, out_features=512, bias=False)
+      (1): LayerNorm((512,), eps=0.001, elementwise_affine=True)
+      (2): SiLU()
+      (3): Linear(in_features=512, out_features=512, bias=False)
+      (4): LayerNorm((512,), eps=0.001, elementwise_affine=True)
+      (5): SiLU()
+    )
+    (_dist_layer): Linear(in_features=512, out_features=2, bias=True)
+  )
+  (critic): DenseHead(
+    (_act): SiLU()
+    (mlp): Sequential(
+      (0): Linear(in_features=1536, out_features=512, bias=True)
+      (1): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+      (2): SiLU()
+      (3): Linear(in_features=512, out_features=512, bias=True)
+      (4): LayerNorm((512,), eps=1e-05, elementwise_affine=True)
+      (5): SiLU()
+    )
+    (mean_layer): Linear(in_features=512, out_features=255, bias=True)
+  )
+)

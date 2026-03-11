@@ -1,0 +1,121 @@
+from easydict import EasyDict
+
+main_config = dict(
+    exp_name='dreamerv3_rq1_cartpole_fallback_260311_140216',
+    env=dict(
+        manager=dict(
+            episode_num=float('inf'),
+            max_retry=1,
+            retry_type='reset',
+            auto_reset=True,
+            step_timeout=None,
+            reset_timeout=None,
+            retry_waiting_time=0.1,
+            cfg_type='BaseEnvManagerDict',
+            type='base',
+        ),
+        stop_value=500,
+        n_evaluator_episode=1,
+        env_id='CartPole-v1',
+        collector_env_num=1,
+        evaluator_env_num=1,
+    ),
+    policy=dict(
+        model=dict(
+            action_shape=2,
+            actor_dist='onehot',
+        ),
+        learn=dict(
+            learner=dict(
+                train_iterations=1000000000,
+                dataloader=dict(
+                    num_workers=0,
+                ),
+                log_policy=True,
+                is_multitask_pipeline=False,
+                only_monitor_rank0=True,
+                hook=dict(
+                    load_ckpt_before_run='',
+                    log_show_after_iter=100,
+                    save_ckpt_after_iter=10000,
+                    save_ckpt_after_run=True,
+                ),
+                cfg_type='BaseLearnerDict',
+            ),
+            resume_training=False,
+            lambda_=0.95,
+            grad_clip=100,
+            learning_rate=3e-05,
+            batch_size=8,
+            batch_length=16,
+            imag_sample=True,
+            slow_value_target=True,
+            slow_target_update=1,
+            slow_target_fraction=0.02,
+            discount=0.997,
+            reward_EMA=True,
+            actor_entropy=0.0003,
+            actor_state_entropy=0.0,
+            value_decay=0.0,
+            update_per_collect=8,
+        ),
+        collect=dict(
+            collector=dict(
+                deepcopy_obs=False,
+                transform_obs=False,
+                collect_print_freq=100,
+                cfg_type='SampleSerialCollectorDict',
+                type='sample',
+            ),
+            n_sample=1,
+            unroll_len=1,
+            action_size=2,
+            collect_dyn_sample=True,
+        ),
+        eval=dict(
+            evaluator=dict(
+                eval_freq=2000,
+                render={'render_freq': -1, 'mode': 'train_iter'},
+                figure_path=None,
+                cfg_type='InteractionSerialEvaluatorDict',
+                stop_value=500,
+                n_episode=1,
+            ),
+        ),
+        other=dict(
+            replay_buffer=dict(
+                type='sequence',
+                replay_buffer_size=100000,
+                deepcopy=False,
+                enable_track_used_data=False,
+                periodic_thruput_seconds=60,
+                cfg_type='SequenceReplayBufferDict',
+            ),
+        ),
+        on_policy=False,
+        cuda=False,
+        multi_gpu=False,
+        bp_update_sync=True,
+        traj_len_inf=False,
+        random_collect_size=200,
+        transition_with_policy_data=False,
+        imag_horizon=15,
+        cfg_type='DREAMERCommandModePolicyDict',
+        import_names=['ding.policy.mbpolicy.dreamer'],
+    ),
+)
+main_config = EasyDict(main_config)
+main_config = main_config
+create_config = dict(
+    env=dict(
+        type='cartpole',
+        import_names=['dizoo.classic_control.cartpole.envs.cartpole_env'],
+    ),
+    env_manager=dict(
+        cfg_type='BaseEnvManagerDict',
+        type='base',
+    ),
+    policy=dict(type='dreamer'),
+)
+create_config = EasyDict(create_config)
+create_config = create_config

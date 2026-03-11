@@ -1,0 +1,14 @@
+{
+  "env": "CartPole-v1",
+  "agent": "DreamerV3",
+  "seed": 42,
+  "total_budget_episodes": 1,
+  "starla_functional_faults": 0,
+  "starla_reward_faults": 1,
+  "starla_archive_size": 1,
+  "random_functional_faults": 0,
+  "random_reward_faults": 1,
+  "random_total_episodes": 1,
+  "num_generations": 3,
+  "time_seconds": 21.05186313499871
+}
