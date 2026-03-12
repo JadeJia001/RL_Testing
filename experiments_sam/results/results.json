@@ -1,0 +1,17 @@
+{
+  "experiment": "Path B - SAM Sharpness-Guided Mutation",
+  "sam_rho": 0.1,
+  "sam_fallback_count": 0,
+  "env": "CartPole-v1",
+  "agent": "DreamerV3",
+  "seed": 42,
+  "total_budget_episodes": 28,
+  "starla_functional_faults": 0,
+  "starla_reward_faults": 1,
+  "starla_archive_size": 1,
+  "random_functional_faults": 0,
+  "random_reward_faults": 28,
+  "random_total_episodes": 28,
+  "num_generations": 8,
+  "time_seconds": 94.98456979399975
+}

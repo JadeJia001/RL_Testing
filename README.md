@@ -43,11 +43,17 @@ RL_Testing/
 ├── experiments/
 │   └── dreamerv3_rq1/
 │       ├── train_dreamerv3.py     训练并保存 DreamerV3（DI-engine）
-│       ├── run_rq1.py             DreamerV3 进入 STARLA 框架的 RQ1 实验入口
+│       ├── run_rq1.py             Path A：STARLA 随机变异实验入口
 │       ├── adapters/
 │       │   └── value_abstraction.py  基于 DreamerV3 value 的实验性抽象策略
 │       ├── checkpoints/           训练产物（policy、world model、meta）
-│       └── results/               实验结果（results.json、RQ1_report.md）
+│       └── results/               Path A 结果（results.json、RQ1_report.md）
+├── experiments_sam/
+│   ├── run_sam_experiment.py      Path B：STARLA + SAM 引导变异实验入口
+│   ├── adapters/
+│   │   └── sam_mutation.py        SAMGuidedMutator（梯度引导变异算子）
+│   ├── checkpoints/               复用 dreamerv3_rq1/checkpoints（可为空）
+│   └── results/                   Path B 结果（results.json）
 └── MBRL-flat-minima/              其他 MBRL 相关探索
 ```
 
@@ -127,43 +133,74 @@ DreamerV3 是一个基于 world model 的序列决策智能体，它的内部结
 
 ---
 
-## 第三步：端到端测试实验（RQ1）
+## 第三步：端到端测试实验（Path A + Path B）
 
-文件：`experiments/dreamerv3_rq1/run_rq1.py`
+这一阶段我把同一套 STARLA 测试流程拆成两条可直接对比的实验路径：
 
-整个实验链路如下：
+- **Path A（RQ1 基线）**：保留 STARLA 原始随机变异（随机乘性噪声）
+  - 入口：`experiments/dreamerv3_rq1/run_rq1.py`
+- **Path B（SAM 引导）**：将随机变异替换为梯度引导变异
+  - 入口：`experiments_sam/run_sam_experiment.py`
+  - 变异算子：`experiments_sam/adapters/sam_mutation.py`
+
+### 统一主流程（两条路径共享）
 
 ```
 加载 DreamerV3 checkpoint
         ↓
 包装为 DreamerV3Agent（实现 AgentProtocol）
         ↓
-用 agent 采样 6 条确定性 episode（训练表现）+ 6 条随机 episode
+采样训练/随机 episode 作为 STARLA 初始数据
         ↓
 StarlaRunner.prepare_data(...)
-  ├── Q 值抽象：对每个状态调用 get_q_values，离散化为抽象类 ID
-  ├── EpisodeEncoder：抽象状态集合 → 二值向量
-  └── FaultPredictor（RandomForest）：在 training+random 集上训练故障概率模型
+  ├── Q 值抽象（get_q_values -> 离散类 ID）
+  ├── EpisodeEncoder（二值向量）
+  └── FaultPredictor（RandomForest）
         ↓
-StarlaRunner.run() → MOSAEngine.run(initial_population)
-  ├── 三目标评估：reward fitness / confidence fitness / ML 故障概率
-  ├── Crossover：在同一抽象类的状态处拼接两条 episode
-  ├── Mutate：在随机时间步加乘性噪声，触发 re-execute 重放
-  └── Archive 更新：按目标阈值筛选非支配候选
+StarlaRunner.run() -> MOSAEngine.run(initial_population)
+  ├── 三目标评估：reward / confidence / ML fault probability
+  ├── crossover
+  ├── mutate（Path A 与 Path B 在这里分叉）
+  └── archive 更新
         ↓
-统计 STARLA 发现的功能故障数 / 奖励故障数
+统计 STARLA 故障 + 用同等预算运行纯随机测试
         ↓
-同等预算下运行纯随机测试作为对照基线
-        ↓
-输出 results/results.json 与 results/RQ1_report.md
+输出 results.json
 ```
 
-### 我在 `run_rq1.py` 里做的关键工程处理
+### 两条路径的唯一区别：变异算子
 
-- **兜底 fault oracle**：CartPole 用专用 oracle，其他环境自动用 `GenericGymFaultOracle`（基于 episode 长度和 reward 阈值）。
-- **捕获 mutation 次数**：用 monkey patch 包装 `MOSAEngine.run`，捕获 `SearchResult.mutation_count`，用于精确计算测试预算。
-- **过短 episode 防护**：包装 `mutate`，对不足 7 步的 episode 跳过变异，避免切片越界崩溃。
-- **DreamerV3 heads 兼容**：加载完 world model 后，如果 `heads` 不支持 `.get()` 方法，自动 patch 上——DI-engine 不同版本的 model heads 数据结构不一致导致的问题。
+#### Path A：随机变异（RQ1）
+
+在 `starla.core.genetic.transform` 中对状态第一维做随机乘性噪声，属于无方向先验的扰动。
+
+#### Path B：SAM 梯度引导变异
+
+借鉴 SAM 的 `first_step` 思想，将扰动从参数空间迁移到状态空间：
+
+- 参数空间：`w -> w + rho * grad / ||grad||`
+- 状态空间：`s -> s + rho * grad_s(-value) / ||grad_s(-value)||`
+
+在实现上，`SAMGuidedMutator` 通过 DreamerV3 world model 的可微链路计算 `grad_s(-value)`，按 L2 归一化后生成扰动；若梯度异常或过小则自动 fallback 到原随机变异，并记录 `fallback_count`。
+
+### 关键工程处理（保证可运行与可比）
+
+- **DreamerV3 heads 兼容补丁**：`world_model.heads` 缺少 `.get()` 时运行时补齐。
+- **短 episode 防护**：`len(episode) < 7` 时跳过 mutate，避免随机区间越界。
+- **预算可比性**：通过捕获 `SearchResult.mutation_count`，使用 `mutation_count + archive_size` 作为随机对照预算。
+- **Path B 无侵入接入**：运行时 monkey patch `genetic.transform`，并在 `finally` 恢复原引用，不修改 STARLA 核心源码。
+
+### 当前保留结果（最小规模验证）
+
+环境：`CartPole-v1`，seed=42，population=6，generation=3，time budget=60s
+
+| 方法 | 功能故障 | 奖励故障 | 备注 |
+|------|---------|---------|------|
+| Path A：STARLA 随机变异 | 0 | 1 | `experiments/dreamerv3_rq1/results/results.json` |
+| Path B：STARLA + SAM 变异 | 0 | 1 | `experiments_sam/results/results.json`（`sam_fallback_count=0`） |
+| 纯随机测试（同预算） | 0 | 1 | 来自各自 `random_*` 字段 |
+
+当前阶段结论：两条路径在最小规模设置下持平，说明 Path B 链路已正确打通，但还需要更大预算与多 seed 才能判断统计意义上的优劣。
 
 ---
 
@@ -173,8 +210,11 @@ StarlaRunner.run() → MOSAEngine.run(initial_population)
 # 第一步：训练 DreamerV3
 python experiments/dreamerv3_rq1/train_dreamerv3.py
 
-# 第二步：运行 RQ1 实验（STARLA vs 随机测试）
+# 第二步A：运行 Path A（STARLA 随机变异）
 python experiments/dreamerv3_rq1/run_rq1.py
+
+# 第二步B：运行 Path B（STARLA + SAM 引导变异）
+python experiments_sam/run_sam_experiment.py
 ```
 
 关键依赖：
@@ -182,19 +222,6 @@ python experiments/dreamerv3_rq1/run_rq1.py
 pip install -e STARLA/         # 安装 STARLA 框架（包含 stable-baselines3、gymnasium、sklearn 等）
 pip install easydict transformers tensorboardX   # DI-engine 运行时依赖
 ```
-
----
-
-## 当前实验结果
-
-环境：`CartPole-v1`，seed=42，budget=1 episode
-
-| 方法 | 功能故障 | 奖励故障 |
-|------|---------|---------|
-| STARLA | 0 | 1 |
-| Random | 0 | 1 |
-
-这是最小规模参数下的一次探索性运行（population=6，generation=3，time budget=60s）。当前结论是两者持平，后续需要扩大参数规模、多种子重复运行才能做统计比较。
 
 ---
 
