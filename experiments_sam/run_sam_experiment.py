@@ -148,6 +148,7 @@ def _collect_agent_episodes(
             obs, reward, terminated, truncated, _ = env.step(env_action)
             total_reward += float(reward)
             done = bool(terminated or truncated)
+        episode.append((deepcopy(obs), -1))
         episode.append(("done", total_reward))
         if len(episode) - 1 >= min_transitions:
             episodes.append(episode)
@@ -176,6 +177,7 @@ def _collect_random_episodes(env_id: str, n: int, seed: int) -> list[Episode]:
             obs, reward, terminated, truncated, _ = env.step(action)
             total_reward += float(reward)
             done = bool(terminated or truncated)
+        episode.append((deepcopy(obs), -1))
         episode.append(("done", total_reward))
         episodes.append(episode)
     env.close()
