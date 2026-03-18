@@ -103,15 +103,15 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--seeds",
         type=str,
-        default="42,123,456",
+        default="42",
         help="Comma-separated seeds for multi-seed aggregation, e.g. 42,123,456",
     )
-    parser.add_argument("--population-size", type=int, default=16)
-    parser.add_argument("--num-generations", type=int, default=16)
+    parser.add_argument("--population-size", type=int, default=20)
+    parser.add_argument("--num-generations", type=int, default=20)
     parser.add_argument(
         "--time-budget-seconds",
         type=float,
-        default=480.0,
+        default=300.0,
         help="Per-run STARLA time cap (seconds). 9 runs/seed by design.",
     )
     parser.add_argument("--training-episodes", type=int, default=14)
@@ -122,6 +122,16 @@ def _parse_args() -> argparse.Namespace:
         type=str,
         default=",".join(str(v) for v in DEFAULT_RHO_CANDIDATES),
         help="Comma-separated SAM rho values used for sweep, e.g. 0.01,0.03,0.05,0.1,0.2",
+    )
+    parser.add_argument(
+        "--objective-thresholds",
+        type=str,
+        default="100.0,0.8,0.8",
+        help=(
+            "Comma-separated MOSA archive thresholds for the 3 objectives: "
+            "reward_fitness (episode length-1), confidence_margin, ml_nonfault_prob. "
+            "Lower = stricter. E.g. '100.0,0.8,0.8'"
+        ),
     )
     parser.add_argument(
         "--results-dir",
@@ -308,6 +318,11 @@ def _count_functional_faults(
         if callable(checker):
             return sum(1 for episode in episodes if checker(episode))
         return sum(1 for episode in episodes if fault_oracle.is_functional_fault(episode))
+    if mode == "strict":
+        checker = getattr(fault_oracle, "is_functional_fault_strict", None)
+        if callable(checker):
+            return sum(1 for episode in episodes if checker(episode))
+        return sum(1 for episode in episodes if fault_oracle.is_functional_fault(episode))
     raise ValueError(f"Unsupported functional fault mode: {mode}")
 
 
@@ -354,8 +369,19 @@ def _run_single_experiment(
     report, raw_result = _run_starla(runner, sam_mutator=sam_mutator)
     archive_episodes = [candidate.episode for candidate in report.archive]
 
+    all_search_episodes: list[Episode] = []
+    for gen in report.generations:
+        for candidate in gen:
+            all_search_episodes.append(candidate.episode)
+
+    total_searched = len(all_search_episodes)
+    search_func_faults = _count_functional_faults(all_search_episodes, fault_oracle, mode="default")
+    search_reward_faults = sum(1 for ep in all_search_episodes if fault_oracle.is_reward_fault(ep))
+    search_func_fault_rate = search_func_faults / max(1, total_searched)
+    search_reward_fault_rate = search_reward_faults / max(1, total_searched)
+
     total_budget_episodes = int(raw_result.mutation_count + len(report.archive))
-    random_eval_episodes = _collect_random_episodes(env_id, n=total_budget_episodes, seed=exp_cfg.seed + 20_000)
+    random_eval_episodes = _collect_random_episodes(env_id, n=max(total_budget_episodes, total_searched), seed=exp_cfg.seed + 20_000)
     starla_functional_faults = _count_functional_faults(archive_episodes, fault_oracle, mode="default")
     starla_functional_faults_legacy = _count_functional_faults(archive_episodes, fault_oracle, mode="legacy")
     starla_functional_faults_window = _count_functional_faults(archive_episodes, fault_oracle, mode="window")
@@ -363,13 +389,15 @@ def _run_single_experiment(
     random_functional_faults_legacy = _count_functional_faults(random_eval_episodes, fault_oracle, mode="legacy")
     random_functional_faults_window = _count_functional_faults(random_eval_episodes, fault_oracle, mode="window")
     random_reward_faults = sum(1 for ep in random_eval_episodes if fault_oracle.is_reward_fault(ep))
+    random_func_fault_rate = random_functional_faults / max(1, len(random_eval_episodes))
+    random_reward_fault_rate = random_reward_faults / max(1, len(random_eval_episodes))
 
     return {
         "experiment_id": experiment_id,
         "mode": mode,
         "sam_rho": None if sam_rho is None else float(sam_rho),
         "sam_fallback_count": int(sam_mutator.fallback_count if sam_mutator else 0),
-        "functional_fault_definition_active": "window" if hasattr(fault_oracle, "is_functional_fault_window") else "default",
+        "functional_fault_definition_active": "strict" if hasattr(fault_oracle, "is_functional_fault_strict") else ("window" if hasattr(fault_oracle, "is_functional_fault_window") else "default"),
         "env": env_id,
         "agent": "DreamerV3",
         "seed": exp_cfg.seed,
@@ -379,11 +407,18 @@ def _run_single_experiment(
         "starla_functional_faults_window": int(starla_functional_faults_window),
         "starla_reward_faults": int(report.found_faults["reward_faults"]),
         "starla_archive_size": int(len(report.archive)),
+        "search_total_episodes": total_searched,
+        "search_func_faults": search_func_faults,
+        "search_reward_faults": search_reward_faults,
+        "search_func_fault_rate": round(search_func_fault_rate, 4),
+        "search_reward_fault_rate": round(search_reward_fault_rate, 4),
         "random_functional_faults": int(random_functional_faults),
         "random_functional_faults_legacy": int(random_functional_faults_legacy),
         "random_functional_faults_window": int(random_functional_faults_window),
         "random_reward_faults": int(random_reward_faults),
         "random_total_episodes": int(len(random_eval_episodes)),
+        "random_func_fault_rate": round(random_func_fault_rate, 4),
+        "random_reward_fault_rate": round(random_reward_fault_rate, 4),
         "num_generations": exp_cfg.num_generations,
         "time_seconds": float(time.perf_counter() - start_time),
     }
@@ -407,9 +442,9 @@ def _generate_feasibility_report(
     exp4 = exp_results["exp4_sam_double_best"]
 
     all_sam = [exp2, exp3, exp4]
+    baseline_rate = exp1.get("search_func_fault_rate", 0.0)
     any_sam_better = any(
-        (r["starla_functional_faults"] + r["starla_reward_faults"])
-        > (exp1["starla_functional_faults"] + exp1["starla_reward_faults"])
+        r.get("search_func_fault_rate", 0.0) > baseline_rate
         for r in all_sam
     )
     all_stable = all(r.get("sam_fallback_count", 0) == 0 for r in all_sam)
@@ -455,8 +490,15 @@ def _aggregate_seed_reports(seed_reports: list[dict[str, Any]]) -> dict[str, Any
     metric_names = [
         "starla_functional_faults",
         "starla_reward_faults",
+        "search_total_episodes",
+        "search_func_faults",
+        "search_reward_faults",
+        "search_func_fault_rate",
+        "search_reward_fault_rate",
         "random_functional_faults",
         "random_reward_faults",
+        "random_func_fault_rate",
+        "random_reward_fault_rate",
         "total_budget_episodes",
         "time_seconds",
     ]
@@ -473,16 +515,11 @@ def _aggregate_seed_reports(seed_reports: list[dict[str, Any]]) -> dict[str, Any
             summary[metric] = _mean_std(values)
         per_experiment_summary[exp_id] = summary
 
-    baseline_total = per_experiment_summary["exp1_starla_only"]["starla_functional_faults"]["mean"] + per_experiment_summary[
-        "exp1_starla_only"
-    ]["starla_reward_faults"]["mean"]
-    sam_totals = []
+    baseline_rate = per_experiment_summary["exp1_starla_only"]["search_func_fault_rate"]["mean"]
+    sam_rates = []
     for exp_id in ("exp2_sam_best_rho", "exp3_sam_half_best", "exp4_sam_double_best"):
-        sam_total = per_experiment_summary[exp_id]["starla_functional_faults"]["mean"] + per_experiment_summary[exp_id][
-            "starla_reward_faults"
-        ]["mean"]
-        sam_totals.append(sam_total)
-    is_sam_better = any(total > baseline_total for total in sam_totals)
+        sam_rates.append(per_experiment_summary[exp_id]["search_func_fault_rate"]["mean"])
+    is_sam_better = any(rate > baseline_rate for rate in sam_rates)
 
     best_rhos = [float(report["best_rho"]) for report in seed_reports]
     all_stable = all(report["conclusion"]["is_sam_stable"] for report in seed_reports)
@@ -529,13 +566,17 @@ def main() -> None:
     max_wall_clock_bound = len(seeds) * 9 * args.time_budget_seconds
     print(
         f"[FourExps] seeds={seeds}, rho_candidates={rho_candidates}, "
-        f"worst_case_seconds={max_wall_clock_bound:.1f}"
+        f"worst_case_seconds={max_wall_clock_bound:.1f}, "
+        f"objective_thresholds={args.objective_thresholds}"
     )
-    if max_wall_clock_bound > 4 * 3600:
-        print("[FourExps][WARN] worst-case budget exceeds 4 hours. Reduce seeds or time-budget-seconds.")
+    if max_wall_clock_bound > 2 * 3600:
+        print("[FourExps][WARN] worst-case budget exceeds 2 hours. Reduce seeds or time-budget-seconds.")
 
     per_seed_reports: list[dict[str, Any]] = []
     for seed in seeds:
+        obj_thresh = tuple(float(v) for v in args.objective_thresholds.split(","))
+        if len(obj_thresh) != 3:
+            raise ValueError("--objective-thresholds must have exactly 3 comma-separated values.")
         exp_cfg = ExperimentConfig(
             seed=seed,
             population_size=args.population_size,
@@ -544,7 +585,7 @@ def main() -> None:
             training_episodes=args.training_episodes,
             random_episodes=args.random_episodes,
             mutation_rate_factor=args.mutation_rate_factor,
-            objective_thresholds=(70.0, 0.06, 0.05),
+            objective_thresholds=obj_thresh,
         )
 
         _set_global_seed(seed)

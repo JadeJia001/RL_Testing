@@ -209,8 +209,8 @@ class MOSAEngine:
             )
 
             if len(objective_uncovered) == 0:
-                self.logger.info("All objectives covered at generation %s", generation_index + 1)
-                break
+                self.logger.info("All objectives covered at generation %s, continuing search", generation_index + 1)
+                objective_uncovered = list(range(self.config.num_objectives))
 
             next_population: list[Candidate] = []
             index = 0
