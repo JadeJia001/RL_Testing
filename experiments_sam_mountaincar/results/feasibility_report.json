@@ -1,0 +1,538 @@
+{
+  "experiment": "STARLA/SAM feasibility (multi-seed aggregate)",
+  "seed_count": 1,
+  "best_rho_stats": {
+    "mean": 0.1,
+    "std": 0.0
+  },
+  "best_rho_values_per_seed": [
+    0.1
+  ],
+  "per_experiment_summary": {
+    "exp1_starla_only": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        null
+      ],
+      "starla_functional_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 54.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 15.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.037,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.2778,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 54.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 3.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 647.0271663780004,
+        "std": 0.0
+      }
+    },
+    "exp2_sam_best_rho": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.1
+      ],
+      "starla_functional_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 94.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 3.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 17.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.0319,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.1809,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 94.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 3.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 554.9264617519948,
+        "std": 0.0
+      }
+    },
+    "exp3_sam_half_best": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.05
+      ],
+      "starla_functional_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 94.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 8.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 26.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.0851,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.2766,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 94.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 7.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 660.5712989260064,
+        "std": 0.0
+      }
+    },
+    "exp4_sam_double_best": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.2
+      ],
+      "starla_functional_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 2.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 74.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 18.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.0135,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.2432,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 74.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 3.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 669.9447600959975,
+        "std": 0.0
+      }
+    }
+  },
+  "per_seed_reports": [
+    {
+      "experiment": "STARLA/SAM feasibility",
+      "env": "MountainCar-v0",
+      "best_rho": 0.1,
+      "rho_sweep": [
+        {
+          "experiment_id": "sweep_rho_0.01",
+          "mode": "sam",
+          "sam_rho": 0.01,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 6,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 54,
+          "search_func_faults": 4,
+          "search_reward_faults": 22,
+          "search_func_fault_rate": 0.0741,
+          "search_reward_fault_rate": 0.4074,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 54,
+          "random_total_episodes": 54,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 639.7810421650065
+        },
+        {
+          "experiment_id": "sweep_rho_0.03",
+          "mode": "sam",
+          "sam_rho": 0.03,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 74,
+          "search_func_faults": 1,
+          "search_reward_faults": 17,
+          "search_func_fault_rate": 0.0135,
+          "search_reward_fault_rate": 0.2297,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 74,
+          "random_total_episodes": 74,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 662.8325447609968
+        },
+        {
+          "experiment_id": "sweep_rho_0.05",
+          "mode": "sam",
+          "sam_rho": 0.05,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 54,
+          "search_func_faults": 1,
+          "search_reward_faults": 17,
+          "search_func_fault_rate": 0.0185,
+          "search_reward_fault_rate": 0.3148,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 54,
+          "random_total_episodes": 54,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 657.496740550996
+        },
+        {
+          "experiment_id": "sweep_rho_0.1",
+          "mode": "sam",
+          "sam_rho": 0.1,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 4,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 54,
+          "search_func_faults": 4,
+          "search_reward_faults": 19,
+          "search_func_fault_rate": 0.0741,
+          "search_reward_fault_rate": 0.3519,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 54,
+          "random_total_episodes": 54,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 628.8024787869945
+        },
+        {
+          "experiment_id": "sweep_rho_0.2",
+          "mode": "sam",
+          "sam_rho": 0.2,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 2,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 2,
+          "search_total_episodes": 54,
+          "search_func_faults": 1,
+          "search_reward_faults": 18,
+          "search_func_fault_rate": 0.0185,
+          "search_reward_fault_rate": 0.3333,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 54,
+          "random_total_episodes": 54,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 627.6234752849996
+        }
+      ],
+      "experiments": {
+        "exp1_starla_only": {
+          "experiment_id": "exp1_starla_only",
+          "mode": "starla_only",
+          "sam_rho": null,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 2,
+          "starla_functional_faults_legacy": 2,
+          "starla_functional_faults_window": 2,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 54,
+          "search_func_faults": 2,
+          "search_reward_faults": 15,
+          "search_func_fault_rate": 0.037,
+          "search_reward_fault_rate": 0.2778,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 54,
+          "random_total_episodes": 54,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 647.0271663780004
+        },
+        "exp2_sam_best_rho": {
+          "experiment_id": "exp2_sam_best_rho",
+          "mode": "sam",
+          "sam_rho": 0.1,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 94,
+          "search_func_faults": 3,
+          "search_reward_faults": 17,
+          "search_func_fault_rate": 0.0319,
+          "search_reward_fault_rate": 0.1809,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 94,
+          "random_total_episodes": 94,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 554.9264617519948
+        },
+        "exp3_sam_half_best": {
+          "experiment_id": "exp3_sam_half_best",
+          "mode": "sam",
+          "sam_rho": 0.05,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 7,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 94,
+          "search_func_faults": 8,
+          "search_reward_faults": 26,
+          "search_func_fault_rate": 0.0851,
+          "search_reward_fault_rate": 0.2766,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 94,
+          "random_total_episodes": 94,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 660.5712989260064
+        },
+        "exp4_sam_double_best": {
+          "experiment_id": "exp4_sam_double_best",
+          "mode": "sam",
+          "sam_rho": 0.2,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "default",
+          "env": "MountainCar-v0",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 1,
+          "starla_functional_faults_window": 1,
+          "starla_reward_faults": 2,
+          "starla_archive_size": 2,
+          "search_total_episodes": 74,
+          "search_func_faults": 1,
+          "search_reward_faults": 18,
+          "search_func_fault_rate": 0.0135,
+          "search_reward_fault_rate": 0.2432,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 74,
+          "random_total_episodes": 74,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 669.9447600959975
+        }
+      },
+      "conclusion": {
+        "is_pipeline_runnable": true,
+        "is_sam_stable": true,
+        "is_sam_better_than_starla_only": true,
+        "recommended_next_step": "scale_up_budget_and_multi_seed_validation"
+      }
+    }
+  ],
+  "conclusion": {
+    "is_pipeline_runnable": true,
+    "is_sam_stable": true,
+    "is_sam_better_than_starla_only": true,
+    "recommended_next_step": "scale_up_budget_and_multi_seed_validation"
+  }
+}

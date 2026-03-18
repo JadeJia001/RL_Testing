@@ -1,0 +1,8 @@
+{
+  "backend": "mountaincar",
+  "seed": 0,
+  "max_env_step": 10000,
+  "exp_name": "dreamerv3_rq1_mountaincar",
+  "policy_ckpt": "/workspaces/RL_Testing/experiments/dreamerv3_rq1/checkpoints_mountaincar/dreamerv3_policy.pth",
+  "world_model_ckpt": "/workspaces/RL_Testing/experiments/dreamerv3_rq1/checkpoints_mountaincar/dreamerv3_world_model.pth"
+}

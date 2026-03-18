@@ -19,19 +19,26 @@ RL_Testing/
 │   │   ├── envs/                  Gymnasium 适配器（状态保存/恢复）
 │   │   ├── faults/                FaultOracle 抽象
 │   │   └── ml/                    Episode 编码、RF 故障预测
-│   └── Examples/cartpole/
-│       └── fault_oracle.py        CartPole 故障判定（functional / reward）
+│   └── Examples/
+│       ├── cartpole/              CartPole 故障判定
+│       └── mountain_car/          Mountain Car 示例
 ├── DI-engine/                     DreamerV3 训练后端
 ├── experiments/
 │   └── dreamerv3_rq1/
-│       ├── train_dreamerv3.py      训练 DreamerV3
+│       ├── train_dreamerv3.py      训练 DreamerV3（支持 CartPole / Mountain Car）
 │       ├── run_rq1.py             Path A：STARLA 随机变异
 │       └── checkpoints/           训练产物
-├── experiments_sam/
-│   ├── run_four_experiments.py    四实验可行性套件（推荐入口）
-│   ├── run_sam_experiment.py      Path B：单次 SAM 实验
-│   ├── adapters/sam_mutation.py   SAMGuidedMutator（梯度引导变异）
-│   └── results/                   feasibility_report.json、可视化
+├── experiments_sam/               CartPole 四实验套件
+│   ├── run_four_experiments.py
+│   ├── run_sam_experiment.py
+│   ├── adapters/sam_mutation.py
+│   └── results/
+├── experiments_sam_mountaincar/   Mountain Car 四实验套件
+│   ├── run_four_experiments.py
+│   ├── run_sam_experiment.py
+│   ├── adapters/sam_mutation.py
+│   └── results/
+├── README_old.md                  旧版 README（仅 CartPole）
 └── README_original.md             原始 README 完整版
 ```
 
@@ -55,14 +62,18 @@ RL_Testing/
 ### 运行命令
 
 ```bash
-# 需先训练 DreamerV3
+# 需先训练 DreamerV3（按 meta 选择 CartPole 或 Mountain Car）
 python experiments/dreamerv3_rq1/train_dreamerv3.py
 
-# 运行四实验套件（单种子，约 30–45 分钟）
+# CartPole 四实验套件（约 30–45 分钟）
 cd /workspaces/RL_Testing && python experiments_sam/run_four_experiments.py
 
-# 多种子（默认 42，可改为 "42,123"）
+# Mountain Car 四实验套件（约 1.5–2 小时）
+cd /workspaces/RL_Testing && python experiments_sam_mountaincar/run_four_experiments.py
+
+# 多种子
 python experiments_sam/run_four_experiments.py --seeds 42,123
+python experiments_sam_mountaincar/run_four_experiments.py --seeds 42,123
 
 # 自定义参数
 python experiments_sam/run_four_experiments.py --population-size 20 --num-generations 20 --time-budget-seconds 300
@@ -70,21 +81,17 @@ python experiments_sam/run_four_experiments.py --population-size 20 --num-genera
 
 ### 输出
 
-- `experiments_sam/results/feasibility_report.json`：聚合报告
-- `experiments_sam/results/report_viz.html`：可视化（需本地 HTTP 服务打开）
-- `experiments_sam/results/feasibility_report_seed_*.json`：单 seed 详情
+- `experiments_sam/results/feasibility_report.json`：CartPole 聚合报告
+- `experiments_sam_mountaincar/results/feasibility_report.json`：Mountain Car 聚合报告
+- `experiments_*/results/feasibility_report_seed_*.json`：单 seed 详情
 
 ---
 
-## 最新实验结果（CartPole-v1，seed=42）
+## 最新实验结果
 
-### 配置
+### CartPole-v1（seed=42）
 
-- 功能性故障：strict OR 逻辑（position > 1.5 或 angle > 8°）
-- Reward 故障：total_reward < 30
-- MOSA 阈值：(100, 0.8, 0.8)，不提前终止
-
-### 四组实验对比
+**配置**：功能性故障 strict OR 逻辑；Reward 故障 total_reward < 30；MOSA 阈值 (100, 0.8, 0.8)
 
 | 实验 | ρ | search_reward_fault_rate | search_func_fault_rate | 耗时(s) |
 |------|---|--------------------------|------------------------|---------|
@@ -93,16 +100,57 @@ python experiments_sam/run_four_experiments.py --population-size 20 --num-genera
 | Exp3 SAM ½ρ | 0.025 | 0.638 | 1.0 | 318 |
 | Exp4 SAM 2×ρ | 0.1 | **0.612** | 1.0 | 363 |
 
-### 主要结论
+**结论**：search_reward_fault_rate 有区分度；search_func_fault_rate 全为 1.0；SAM 稳定（fallback_count=0）。
 
-1. **search_reward_fault_rate 有区分度**：Exp4（SAM 2×ρ）最低 0.612，说明较大 ρ 的 SAM 变异产生的 reward 故障最少；Exp2 略高于 baseline。
-2. **search_func_fault_rate 全为 1.0**：MOSA 搜索偏向失败型 episode，CartPole 失败时 position 或 angle 必超阈值，当前 strict 定义下无法区分。
-3. **SAM 稳定**：`sam_fallback_count = 0`，梯度计算均成功。
+---
+
+### Mountain Car-v0（seed=42）
+
+**配置**：功能性故障 default（GenericGymFaultOracle）；Reward 故障基于 env reward_threshold；MOSA 阈值 (100, 0.8, 0.8)
+
+**总体结论**：✅ 管道可运行 | ✅ SAM 稳定 | ✅ **SAM 优于纯 STARLA** | 建议：扩大预算并多种子验证
+
+#### ρ sweep（best_rho = 0.1）
+
+| ρ | search_func_fault_rate | search_reward_fault_rate | 耗时(s) |
+|---|------------------------|--------------------------|---------|
+| 0.01 | 0.074 | 0.407 | 640 |
+| 0.03 | **0.014** | **0.230** | 663 |
+| 0.05 | 0.019 | 0.315 | 657 |
+| **0.1** | 0.074 | 0.352 | **629** |
+| 0.2 | 0.019 | 0.333 | 628 |
+
+#### 四组实验对比
+
+| 实验 | ρ | search_func_fault_rate | search_reward_fault_rate | 耗时(s) |
+|------|---|------------------------|--------------------------|---------|
+| Exp1 STARLA only | — | 0.037 | 0.278 | 647 |
+| Exp2 SAM best ρ | 0.1 | **0.032** | **0.181** | 555 |
+| Exp3 SAM ½ρ | 0.05 | 0.085 | 0.277 | 661 |
+| Exp4 SAM 2×ρ | 0.2 | **0.014** | 0.243 | 670 |
+
+**主要发现**：
+
+1. **search_reward_fault_rate**：Exp2（SAM best ρ）最低 **0.181**，明显低于 baseline 0.278，SAM 引导变异更有效发现 reward 故障。
+2. **search_func_fault_rate**：Exp4（ρ=0.2）最低 **0.014**，Exp2 为 0.032，均低于 baseline 0.037。
+3. **与 CartPole 对比**：Mountain Car 上 SAM 优于纯 STARLA，而 CartPole 上之前未观察到该优势。
+4. **random_reward_fault_rate = 1.0**：随机测试几乎全是 reward 故障，符合 Mountain Car 任务难度。
+
+---
+
+### 两环境对比摘要
+
+| 环境 | best_rho | SAM 优于 STARLA | 备注 |
+|------|----------|-----------------|------|
+| CartPole-v1 | 0.05 | 否 | search_func_fault_rate 全为 1.0，难以区分 |
+| Mountain Car-v0 | 0.1 | **是** | search_reward/func_fault_rate 均有明显改善 |
+
+---
 
 ### 指标说明
 
-- **search_reward_fault_rate**：搜索过程中 episode 的 reward 故障比例（reward < 30 步）
-- **search_func_fault_rate**：搜索过程中 episode 的功能性故障比例（越界）
+- **search_reward_fault_rate**：搜索过程中 episode 的 reward 故障比例
+- **search_func_fault_rate**：搜索过程中 episode 的功能性故障比例
 - **starla_archive_size**：MOSA 存档大小（通常 = num_objectives = 3 或受阈值限制）
 
 ---
@@ -115,6 +163,7 @@ python experiments/dreamerv3_rq1/run_rq1.py
 
 # Path B：单次 SAM 实验
 python experiments_sam/run_sam_experiment.py
+python experiments_sam_mountaincar/run_sam_experiment.py
 ```
 
 ---
@@ -128,6 +177,7 @@ pip install easydict transformers tensorboardX
 
 ---
 
-## 原始 README
+## 相关文档
 
-完整框架说明、协议定义、DreamerV3 适配细节等见 **README_original.md**。
+- **README_old.md**：旧版 README（仅 CartPole 结果）
+- **README_original.md**：完整框架说明、协议定义、DreamerV3 适配细节
