@@ -1,9 +1,10 @@
 {
-  "name": "RL_Testing (STARLA + DI-engine)",
+  "name": "RL_Testing GPU (STARLA + DI-engine)",
   "build": {
-    "dockerfile": "../../STARLA/Dockerfile",
+    "dockerfile": "./Dockerfile",
     "context": "../../STARLA"
   },
+  "runArgs": ["--gpus", "all", "--ipc=host"],
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
