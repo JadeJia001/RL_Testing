@@ -368,7 +368,7 @@ class ConvDecoder(nn.Module):
         x = x.reshape([-1, 4, 4, self._embed_size // 16])
         x = x.permute(0, 3, 1, 2)
         x = self.layers(x)
-        mean = x.reshape(list(features.shape[:-1]) + self._shape)
+        mean = x.reshape(list(features.shape[:-1]) + list(self._shape))
         #mean = mean.permute(0, 1, 3, 4, 2)
         return SymlogDist(mean)
 

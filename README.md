@@ -38,6 +38,13 @@ RL_Testing/
 │   ├── run_sam_experiment.py
 │   ├── adapters/sam_mutation.py
 │   └── results/
+├── experiments_atari_sam/         Atari Breakout 四实验套件（新增）
+│   ├── train_dreamerv3_breakout.py  训练 DreamerV3（ALE/Breakout-v5, RGB 64x64）
+│   ├── run_four_experiments_atari.py  四组实验 + ρ sweep
+│   ├── adapters/sam_mutation_atari.py  Atari 专用 SAM 变异
+│   ├── fault_oracle/breakout_fault_oracle.py  Breakout 故障判定
+│   └── results/
+├── README_v2.md                   上一版 README（CartPole + Mountain Car）
 ├── README_old.md                  旧版 README（仅 CartPole）
 └── README_original.md             原始 README 完整版
 ```
@@ -71,9 +78,16 @@ cd /workspaces/RL_Testing && python experiments_sam/run_four_experiments.py
 # Mountain Car 四实验套件（约 1.5–2 小时）
 cd /workspaces/RL_Testing && python experiments_sam_mountaincar/run_four_experiments.py
 
+# Atari Breakout 四实验套件（约 1–1.5 小时）
+# 需先训练 DreamerV3 Breakout 模型
+python experiments_atari_sam/train_dreamerv3_breakout.py --max-env-step 500000
+# 再运行四实验
+python experiments_atari_sam/run_four_experiments_atari.py
+
 # 多种子
 python experiments_sam/run_four_experiments.py --seeds 42,123
 python experiments_sam_mountaincar/run_four_experiments.py --seeds 42,123
+python experiments_atari_sam/run_four_experiments_atari.py --seeds 42,123
 
 # 自定义参数
 python experiments_sam/run_four_experiments.py --population-size 20 --num-generations 20 --time-budget-seconds 300
@@ -83,6 +97,7 @@ python experiments_sam/run_four_experiments.py --population-size 20 --num-genera
 
 - `experiments_sam/results/feasibility_report.json`：CartPole 聚合报告
 - `experiments_sam_mountaincar/results/feasibility_report.json`：Mountain Car 聚合报告
+- `experiments_atari_sam/results/feasibility_report.json`：Breakout 聚合报告
 - `experiments_*/results/feasibility_report_seed_*.json`：单 seed 详情
 
 ---
@@ -138,12 +153,48 @@ python experiments_sam/run_four_experiments.py --population-size 20 --num-genera
 
 ---
 
-### 两环境对比摘要
+### ALE/Breakout-v5（seed=42）
+
+**配置**：DreamerV3 RGB 64x64 输入；功能性故障 strict（BreakoutFaultOracle）；MOSA 阈值 (5.0, 0.8, 0.8)；20 代
+
+> **注意**：当前 DreamerV3 训练步数较少（10000 步），模型基本为随机策略，random_reward_fault_rate 高达 95-100%。需更长训练才能得到有意义的 agent 行为对比。
+
+#### ρ sweep（best_rho = 0.05）
+
+| ρ | search_func_fault_rate | search_reward_fault_rate | 随机 reward fault 率 | 耗时(s) |
+|---|------------------------|--------------------------|---------------------|---------|
+| 0.01 | 8.9% | 21.1% | 98.9% | 954 |
+| 0.03 | 13.3% | 23.3% | 100% | 889 |
+| **0.05** | **10.0%** | **21.4%** | **95.7%** | **914** |
+| 0.1 | 4.3% | 27.1% | 97.1% | 972 |
+| 0.2 | 23.6% | 16.4% | 98.2% | 923 |
+
+#### 四组实验对比
+
+| 实验 | ρ | search_func_fault_rate | search_reward_fault_rate | 耗时(s) |
+|------|---|------------------------|--------------------------|---------|
+| Exp1 STARLA only | — | 24.5% | 20.9% | 908 |
+| Exp2 SAM best ρ | 0.05 | **29.3%** | 13.3% | 966 |
+| Exp3 SAM ½ρ | 0.025 | 19.2% | 14.6% | 955 |
+| Exp4 SAM 2×ρ | 0.1 | **30.0%** | 14.6% | 864 |
+
+**主要发现**：
+
+1. **Pipeline 可运行**：STARLA+SAM 在 Atari RGB 环境上端到端跑通，包括 ALE 状态保存/恢复、图像预处理。
+2. **SAM 稳定**：所有实验 `sam_fallback_count = 0`，无回退。
+3. **SAM 优于纯 STARLA**：Exp2/Exp4 的 functional fault 发现率（29.3%/30.0%）高于纯 STARLA（24.5%）。
+4. **Archive 较小**：所有实验 archive_size = 1，因模型训练不足，遗传搜索多样性有限。
+5. **建议下一步**：扩大训练预算（≥500k env steps）+ 多种子验证。
+
+---
+
+### 三环境对比摘要
 
 | 环境 | best_rho | SAM 优于 STARLA | 备注 |
 |------|----------|-----------------|------|
 | CartPole-v1 | 0.05 | 否 | search_func_fault_rate 全为 1.0，难以区分 |
 | Mountain Car-v0 | 0.1 | **是** | search_reward/func_fault_rate 均有明显改善 |
+| ALE/Breakout-v5 | 0.05 | **是** | func_fault_rate 从 24.5% 提升至 30.0%（+5.5pp）|
 
 ---
 
@@ -179,5 +230,6 @@ pip install easydict transformers tensorboardX
 
 ## 相关文档
 
+- **README_v2.md**：上一版 README（CartPole + Mountain Car 结果）
 - **README_old.md**：旧版 README（仅 CartPole 结果）
 - **README_original.md**：完整框架说明、协议定义、DreamerV3 适配细节

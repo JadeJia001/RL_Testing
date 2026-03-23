@@ -22,10 +22,11 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/DI-engine")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/STARLA/src")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/STARLA")
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT / "DI-engine"))
+sys.path.insert(0, str(_ROOT / "STARLA" / "src"))
+sys.path.insert(0, str(_ROOT / "STARLA"))
 
 from experiments_atari_sam.adapters.sam_mutation_atari import SAMGuidedMutatorAtari
 from experiments_atari_sam.fault_oracle.breakout_fault_oracle import BreakoutFaultOracle
@@ -39,7 +40,7 @@ from starla.faults.base import FaultOracle
 from starla.runner import MOSAEngine as RunnerMOSAEngine
 from starla.runner import StarlaRunner
 
-DEFAULT_RESULTS_DIR = Path("/Users/jq/Documents/RL_Testing/experiments_atari_sam/results")
+DEFAULT_RESULTS_DIR = _ROOT / "experiments_atari_sam" / "results"
 DEFAULT_RHO_CANDIDATES = [0.01, 0.03, 0.05, 0.1, 0.2]
 
 
@@ -176,6 +177,47 @@ def _maybe_preprocess_obs_for_dreamer(obs: Any, world_model: Any | None) -> Any:
     return preprocess_ale_rgb_obs_for_dreamer(obs)
 
 
+class _PreprocessedGymnasiumEnv(GymnasiumEnv):
+    """GymnasiumEnv wrapper that auto-preprocesses observations for DreamerV3."""
+
+    def __init__(self, env_id: str, world_model: Any, **kwargs: Any) -> None:
+        super().__init__(env_id, **kwargs)
+        self._world_model = world_model
+
+    def _pre(self, obs: Any) -> Any:
+        return _maybe_preprocess_obs_for_dreamer(obs, self._world_model)
+
+    def reset(self) -> Any:
+        obs, _ = self.env.reset()
+        processed = self._pre(obs)
+        self._last_obs = deepcopy(processed)
+        self._mem = []
+        self._episode_reward = 0.0
+        return processed
+
+    def step(self, action: Any) -> tuple[Any, float, bool, bool, dict[str, Any]]:
+        obs, reward, terminated, truncated, info = self.env.step(action)
+        reward_value = float(reward)
+        processed = self._pre(obs)
+        if self._last_obs is not None:
+            self._mem.append((deepcopy(self._last_obs), int(action)))
+        self._episode_reward += reward_value
+        done = bool(terminated or truncated)
+        if done:
+            self._mem.append((deepcopy(processed), -1))
+            self._mem.append(("done", self._episode_reward))
+        self._last_obs = deepcopy(processed)
+        info = dict(info)
+        info["mem"] = deepcopy(self._mem)
+        return processed, reward_value, bool(terminated), bool(truncated), info
+
+    def set_state(self, state: Any) -> Any:
+        raw_obs = super().set_state(state)
+        processed = self._pre(raw_obs)
+        self._last_obs = deepcopy(processed)
+        return processed
+
+
 def _collect_agent_episodes(
     agent: DreamerV3Agent,
     env_id: str,
@@ -184,9 +226,10 @@ def _collect_agent_episodes(
     seed: int,
     min_transitions: int = 50,
     world_model: Any | None = None,
-) -> list[Episode]:
+) -> tuple[list[Episode], list[Any]]:
     env = GymnasiumEnv(env_id, obs_type="rgb")
     episodes: list[Episode] = []
+    episode_start_states: list[Any] = []
     ep_idx = 0
     attempts = 0
     max_attempts = max(20, n * 10)
@@ -194,6 +237,7 @@ def _collect_agent_episodes(
         attempts += 1
         env.env.reset(seed=seed + ep_idx)
         obs = env.reset()
+        episode_start_state = env.get_state()
         obs = _maybe_preprocess_obs_for_dreamer(obs, world_model)
         agent.reset_state()
         done = False
@@ -211,6 +255,7 @@ def _collect_agent_episodes(
         episode.append(("done", total_reward))
         if len(episode) - 1 >= min_transitions:
             episodes.append(episode)
+            episode_start_states.append(episode_start_state)
         ep_idx += 1
     env.env.close()
     if len(episodes) < n:
@@ -218,7 +263,7 @@ def _collect_agent_episodes(
             "Unable to collect enough valid episodes for STARLA. "
             f"needed={n}, got={len(episodes)}, min_transitions={min_transitions}"
         )
-    return episodes
+    return episodes, episode_start_states
 
 
 def _collect_random_episodes(env_id: str, n: int, seed: int, world_model: Any | None = None) -> list[Episode]:
@@ -351,9 +396,9 @@ def _run_single_experiment(
     start_time = time.perf_counter()
     _set_global_seed(exp_cfg.seed)
     agent = DreamerV3Agent(policy=policy, world_model=world_model)
-    env_adapter = GymnasiumEnv(env_id, obs_type="rgb")
+    env_adapter = _PreprocessedGymnasiumEnv(env_id, world_model=world_model, obs_type="rgb")
 
-    training_episodes = _collect_agent_episodes(
+    training_episodes, training_env_states = _collect_agent_episodes(
         agent,
         env_id,
         exp_cfg.training_episodes,
@@ -361,7 +406,7 @@ def _run_single_experiment(
         seed=exp_cfg.seed,
         world_model=world_model,
     )
-    random_seed_episodes = _collect_agent_episodes(
+    random_seed_episodes, random_env_states = _collect_agent_episodes(
         agent,
         env_id,
         exp_cfg.random_episodes,
@@ -383,7 +428,10 @@ def _run_single_experiment(
         )
 
     runner = StarlaRunner(config=_build_config(exp_cfg), agent=agent, env=env_adapter, fault_oracle=fault_oracle)
-    runner.prepare_data(training_episodes, random_seed_episodes)
+    initial_population = runner.prepare_data(training_episodes, random_seed_episodes)
+    env_states_for_population = random_env_states if random_seed_episodes else training_env_states
+    for candidate, ale_state in zip(initial_population, env_states_for_population):
+        candidate.start_state = ale_state
     report, raw_result = _run_starla(runner, sam_mutator=sam_mutator)
     archive_episodes = [candidate.episode for candidate in report.archive]
 

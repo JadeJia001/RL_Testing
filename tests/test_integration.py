@@ -152,7 +152,7 @@ def test_atari_collect_one_episode_mock_agent(monkeypatch: pytest.MonkeyPatch) -
 
     mock_agent = make_mock_agent(action=np.array([0]))
     try:
-        episodes = _collect_agent_episodes(
+        episodes, _ = _collect_agent_episodes(
             mock_agent,
             "ALE/Breakout-v5",
             n=1,
@@ -176,15 +176,15 @@ def test_atari_collect_one_episode_mock_agent(monkeypatch: pytest.MonkeyPatch) -
 def _require_mujoco_env() -> None:
     pytest.importorskip("mujoco", reason="mujoco not installed")
     try:
-        e = gym.make("HalfCheetah-v5")
+        e = gym.make("HalfCheetah-v4")
         e.close()
     except Exception:
-        pytest.skip("HalfCheetah-v5 not available (install mujoco + gymnasium[mujoco])")
+        pytest.skip("HalfCheetah-v4 not available (install mujoco + gymnasium[mujoco])")
 
 
 def test_mujoco_gym_make_and_step() -> None:
     _require_mujoco_env()
-    env = gym.make("HalfCheetah-v5")
+    env = gym.make("HalfCheetah-v4")
     try:
         obs, _ = env.reset(seed=0)
         assert obs.shape == (17,)
@@ -216,7 +216,7 @@ def test_mujoco_gymnasium_env_adapter_KNOWN_BUG() -> None:
     _require_mujoco_env()
     from starla.envs.gymnasium_adapter import GymnasiumEnv
 
-    env = GymnasiumEnv("HalfCheetah-v5")
+    env = GymnasiumEnv("HalfCheetah-v4")
     try:
         env.reset()
         continuous_action = np.array([0.1, -0.2, 0.3, -0.4, 0.5, -0.6])
@@ -231,7 +231,7 @@ def test_mujoco_continuous_gymnasium_env_adapter_fixed() -> None:
     pytest.importorskip("mujoco", reason="mujoco not installed")
     from experiments_mujoco_sam.envs.continuous_gymnasium_adapter import ContinuousGymnasiumEnv
 
-    env = ContinuousGymnasiumEnv("HalfCheetah-v5")
+    env = ContinuousGymnasiumEnv("HalfCheetah-v4")
     try:
         env.reset()
         continuous_action = np.array([0.1, -0.2, 0.3, -0.4, 0.5, -0.6])
@@ -258,7 +258,7 @@ def test_mujoco_collect_random_episodes() -> None:
     _require_mujoco_env()
     from experiments_mujoco_sam.run_four_experiments_mujoco import _collect_random_episodes
 
-    episodes = _collect_random_episodes("HalfCheetah-v5", n=2, seed=0)
+    episodes = _collect_random_episodes("HalfCheetah-v4", n=2, seed=0)
     assert len(episodes) == 2
     for ep in episodes:
         assert ep[-1][0] == "done"
@@ -286,7 +286,7 @@ def test_mujoco_collect_agent_episodes_KNOWN_BUG(monkeypatch: pytest.MonkeyPatch
     with pytest.raises(TypeError):
         _collect_agent_episodes(
             mock_agent,
-            "HalfCheetah-v5",
+            "HalfCheetah-v4",
             n=1,
             deterministic=True,
             seed=0,
@@ -312,7 +312,7 @@ def test_mujoco_collect_agent_episodes_with_fix(monkeypatch: pytest.MonkeyPatch)
     mock_agent = make_mock_agent(action=np.array([0.1, -0.2, 0.3, -0.4, 0.5, -0.6]))
     episodes = _collect_agent_episodes(
         mock_agent,
-        "HalfCheetah-v5",
+        "HalfCheetah-v4",
         n=1,
         deterministic=True,
         seed=0,

@@ -32,7 +32,8 @@ def compute_confidence_fitness(
     for i in range(len(episode)):
         if i == (len(episode) - 1):
             if episode[i][0] == "done":
-                return confidence_level / float(episode[i][1])
+                steps = float(episode[i][1])
+                return confidence_level / steps if steps != 0.0 else 0.0
             raise AssertionError("last state is not done , reward")
 
         prob = np.asarray(agent.get_action_probabilities(episode[i][0]), dtype=float).reshape(-1)

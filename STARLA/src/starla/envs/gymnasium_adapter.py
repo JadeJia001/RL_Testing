@@ -41,6 +41,12 @@ class GymnasiumEnv:
 
     def get_state(self) -> Any:
         unwrapped = self.env.unwrapped
+        if hasattr(unwrapped, "ale"):
+            # ale-py uses cloneState/restoreState for save/restore.
+            ale_obj = unwrapped.ale
+            if hasattr(ale_obj, "cloneState"):
+                return {"_ale_state": ale_obj.cloneState()}
+            raise RuntimeError("ALE environment has .ale but no cloneState(); cannot snapshot state.")
         if hasattr(unwrapped, "state"):
             return deepcopy(unwrapped.state)
         try:
@@ -50,6 +56,23 @@ class GymnasiumEnv:
 
     def set_state(self, state: Any) -> Any:
         unwrapped = self.env.unwrapped
+        # ALE state (saved by get_state above)
+        if isinstance(state, dict) and "_ale_state" in state:
+            ale_obj = unwrapped.ale
+            st = state["_ale_state"]
+            if hasattr(ale_obj, "restoreState"):
+                ale_obj.restoreState(st)
+            else:
+                raise RuntimeError("ALE environment has .ale but no restoreState(); cannot restore snapshot.")
+            if hasattr(unwrapped, "_get_obs"):
+                obs = unwrapped._get_obs()
+            else:
+                obs, _ = self.env.reset()
+            self._last_obs = deepcopy(obs)
+            self._mem = []
+            self._episode_reward = 0.0
+            return obs
+
         if hasattr(unwrapped, "state") and not hasattr(state, "__dict__"):
             unwrapped.state = deepcopy(state)
             current_state = deepcopy(unwrapped.state)
@@ -64,7 +87,13 @@ class GymnasiumEnv:
         elif isinstance(state, dict):
             unwrapped.__dict__.update(deepcopy(state))
         else:
-            raise ValueError("Unsupported state format for set_state.")
+            # Fallback: unrecognized format (e.g. raw obs numpy array),
+            # reset to episode start — acceptable for fixed-start envs like Breakout
+            obs, _ = self.env.reset()
+            self._last_obs = deepcopy(obs)
+            self._mem = []
+            self._episode_reward = 0.0
+            return obs
 
         if hasattr(unwrapped, "state"):
             current_state = deepcopy(unwrapped.state)

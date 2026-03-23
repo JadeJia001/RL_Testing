@@ -1,4 +1,4 @@
-"""Train and load DI-engine DreamerV3 for MuJoCo HalfCheetah-v5 (continuous control)."""
+"""Train and load DI-engine DreamerV3 for MuJoCo HalfCheetah-v4 (continuous control)."""
 
 from __future__ import annotations
 
@@ -11,7 +11,8 @@ from typing import Any
 import torch
 from easydict import EasyDict
 
-_ROOT = Path("/Users/jq/Documents/RL_Testing")
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_ROOT / "DI-engine"))
 sys.path.insert(0, str(_ROOT / "STARLA" / "src"))
 
@@ -36,7 +37,7 @@ def _build_halfcheetah_config() -> tuple[EasyDict, EasyDict]:
         dict(
             exp_name="dreamerv3_halfcheetah",
             env=dict(
-                env_id="HalfCheetah-v5",
+                env_id="HalfCheetah-v4",
                 norm_obs=dict(use_norm=False),
                 norm_reward=dict(use_norm=False),
                 action_clip=False,
@@ -171,10 +172,13 @@ def _run_training_loop(setup_items: tuple[Any, ...], max_env_step: int) -> tuple
                 batch_length = cfg.policy.learn.batch_length
                 try:
                     post, _ = world_model.train(env_buffer, collector.envstep, learner.train_iter, batch_size, batch_length)
-                except RuntimeError as err:
+                except (RuntimeError, TypeError) as err:
                     if "zero-dimensional tensor" in str(err):
                         print(f"[Train] world_model.train skipped due to shape mismatch: {err}")
                         hit_world_model_shape_issue = True
+                        break
+                    if "NoneType" in str(err):
+                        print(f"[Train] world_model.train skipped: not enough samples in buffer yet.")
                         break
                     raise
                 learner.train(
@@ -272,7 +276,7 @@ def load_dreamerv3_halfcheetah(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train DreamerV3 on HalfCheetah-v5")
+    parser = argparse.ArgumentParser(description="Train DreamerV3 on HalfCheetah-v4")
     parser.add_argument("--max-env-step", type=int, default=MAX_ENV_STEP_DEFAULT)
     parser.add_argument("--seed", type=int, default=SEED_DEFAULT)
     args = parser.parse_args()

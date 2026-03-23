@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any, Union
 
 import gymnasium as gym
+import ale_py
+gym.register_envs(ale_py)
 import numpy as np
 import torch
 from ding.envs import BaseEnv, BaseEnvTimestep
@@ -17,7 +19,8 @@ from ding.torch_utils import to_ndarray
 from ding.utils import ENV_REGISTRY
 from easydict import EasyDict
 
-_ROOT = Path("/Users/jq/Documents/RL_Testing")
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_ROOT / "DI-engine"))
 sys.path.insert(0, str(_ROOT / "STARLA" / "src"))
 
@@ -203,7 +206,7 @@ def _build_breakout_fallback_config() -> tuple[EasyDict, EasyDict]:
         dict(
             env=dict(
                 type="breakout_ale_rgb",
-                import_names=["experiments_atari_sam.train_dreamerv3_breakout"],
+                import_names=[],
             ),
             env_manager=dict(type="base"),
             policy=dict(
@@ -232,6 +235,7 @@ def _build_breakout_config() -> tuple[EasyDict, EasyDict]:
         cfg.env.collector_env_num = 1
         cfg.env.evaluator_env_num = 1
         cfg.env.n_evaluator_episode = 1
+        create_cfg.env.import_names = []
         return cfg, create_cfg
     except Exception:
         return _build_breakout_fallback_config()
@@ -294,10 +298,13 @@ def _run_training_loop(setup_items: tuple[Any, ...], max_env_step: int) -> tuple
                 batch_length = cfg.policy.learn.batch_length
                 try:
                     post, _ = world_model.train(env_buffer, collector.envstep, learner.train_iter, batch_size, batch_length)
-                except RuntimeError as err:
+                except (RuntimeError, TypeError) as err:
                     if "zero-dimensional tensor" in str(err):
                         print(f"[Train] world_model.train skipped due to shape mismatch: {err}")
                         hit_world_model_shape_issue = True
+                        break
+                    if "NoneType" in str(err):
+                        print(f"[Train] world_model.train skipped: not enough samples in buffer yet.")
                         break
                     raise
                 learner.train(

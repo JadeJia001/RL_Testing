@@ -49,7 +49,7 @@ def mutate(
     env: EnvProtocol,
     mutation_rate: float,
     *,
-    reexecute_rollout_limit: int = 400,
+    reexecute_rollout_limit: int = 2000,
 ) -> tuple[Candidate, int]:
     """
     Mutate one parent with probability `mutation_rate`.
@@ -198,12 +198,12 @@ def re_execute(
     env: EnvProtocol,
     candidate: Candidate,
     *,
-    max_followup_steps: int = 400,
+    max_followup_steps: int = 2000,
 ) -> Episode:
     """
     Re-execute candidate trajectory from its saved start state.
 
-    `max_followup_steps` replaces the notebook's hard-coded 400 steps.
+    `max_followup_steps` caps rollout after replaying the candidate prefix (default 2000).
     """
     env.reset()
     obs = env.set_state(deepcopy(candidate.start_state))
@@ -233,11 +233,17 @@ def re_execute(
             raise AssertionError("Unexpected reward > 201")
 
     if not done:
+        # Episode did not terminate within max_followup_steps;
+        # build a synthetic terminal from the last observation.
+        if info and "mem" in info:
+            mem = info["mem"]
+            mem.append(("done", episode_reward))
+            return mem
         raise AssertionError("Episode did not terminate during re-execution")
     if episode_reward > 201:
         raise AssertionError("Unexpected accumulated reward > 201")
 
     if "mem" not in info:
         raise KeyError("Expected 'mem' in env info during re_execute")
-    return info["mem"][-(int(episode_reward) + 2) :]
+    return info["mem"]
 

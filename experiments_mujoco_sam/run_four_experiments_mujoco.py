@@ -21,10 +21,11 @@ import gymnasium as gym
 import numpy as np
 import torch
 
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/DI-engine")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/STARLA/src")
-sys.path.insert(0, "/Users/jq/Documents/RL_Testing/STARLA")
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_ROOT / "DI-engine"))
+sys.path.insert(0, str(_ROOT / "STARLA" / "src"))
+sys.path.insert(0, str(_ROOT / "STARLA"))
 
 from experiments_mujoco_sam.adapters.sam_mutation_mujoco import SAMGuidedMutatorMujoco
 from experiments_mujoco_sam.envs.continuous_gymnasium_adapter import ContinuousGymnasiumEnv
@@ -38,7 +39,7 @@ from starla.faults.base import FaultOracle
 from starla.runner import MOSAEngine as RunnerMOSAEngine
 from starla.runner import StarlaRunner
 
-DEFAULT_RESULTS_DIR = Path("/Users/jq/Documents/RL_Testing/experiments_mujoco_sam/results")
+DEFAULT_RESULTS_DIR = _ROOT / "experiments_mujoco_sam" / "results"
 DEFAULT_RHO_CANDIDATES = [0.01, 0.03, 0.05, 0.1, 0.2]
 
 
@@ -146,7 +147,7 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _select_env_and_oracle() -> tuple[str, FaultOracle]:
-    return "HalfCheetah-v5", HalfCheetahFaultOracle()
+    return "HalfCheetah-v4", HalfCheetahFaultOracle()
 
 
 def _set_global_seed(seed: int) -> None:

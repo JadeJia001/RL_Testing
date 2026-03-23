@@ -1,0 +1,538 @@
+{
+  "experiment": "STARLA/SAM feasibility (multi-seed aggregate)",
+  "seed_count": 1,
+  "best_rho_stats": {
+    "mean": 0.05,
+    "std": 0.0
+  },
+  "best_rho_values_per_seed": [
+    0.05
+  ],
+  "per_experiment_summary": {
+    "exp1_starla_only": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        null
+      ],
+      "starla_functional_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 110.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 27.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 23.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.2455,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.2091,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 109.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 0.9909,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 11.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 907.8040786630008,
+        "std": 0.0
+      }
+    },
+    "exp2_sam_best_rho": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.05
+      ],
+      "starla_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 150.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 44.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 20.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.2933,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.1333,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 148.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 0.9867,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 10.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 966.0248701079981,
+        "std": 0.0
+      }
+    },
+    "exp3_sam_half_best": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.025
+      ],
+      "starla_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 130.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 25.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 19.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.1923,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.1462,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 129.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 0.9923,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 7.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 954.9278191049962,
+        "std": 0.0
+      }
+    },
+    "exp4_sam_double_best": {
+      "sample_size": 1,
+      "sam_rho_values": [
+        0.1
+      ],
+      "starla_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "starla_reward_faults": {
+        "mean": 1.0,
+        "std": 0.0
+      },
+      "search_total_episodes": {
+        "mean": 130.0,
+        "std": 0.0
+      },
+      "search_func_faults": {
+        "mean": 39.0,
+        "std": 0.0
+      },
+      "search_reward_faults": {
+        "mean": 19.0,
+        "std": 0.0
+      },
+      "search_func_fault_rate": {
+        "mean": 0.3,
+        "std": 0.0
+      },
+      "search_reward_fault_rate": {
+        "mean": 0.1462,
+        "std": 0.0
+      },
+      "random_functional_faults": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_faults": {
+        "mean": 126.0,
+        "std": 0.0
+      },
+      "random_func_fault_rate": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "random_reward_fault_rate": {
+        "mean": 0.9692,
+        "std": 0.0
+      },
+      "total_budget_episodes": {
+        "mean": 11.0,
+        "std": 0.0
+      },
+      "time_seconds": {
+        "mean": 863.5678893519944,
+        "std": 0.0
+      }
+    }
+  },
+  "per_seed_reports": [
+    {
+      "experiment": "STARLA/SAM feasibility",
+      "env": "ALE/Breakout-v5",
+      "best_rho": 0.05,
+      "rho_sweep": [
+        {
+          "experiment_id": "sweep_rho_0.01",
+          "mode": "sam",
+          "sam_rho": 0.01,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 7,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 90,
+          "search_func_faults": 8,
+          "search_reward_faults": 19,
+          "search_func_fault_rate": 0.0889,
+          "search_reward_fault_rate": 0.2111,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 89,
+          "random_total_episodes": 90,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9889,
+          "num_generations": 20,
+          "time_seconds": 954.4651156409964
+        },
+        {
+          "experiment_id": "sweep_rho_0.03",
+          "mode": "sam",
+          "sam_rho": 0.03,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 10,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 0,
+          "starla_archive_size": 1,
+          "search_total_episodes": 90,
+          "search_func_faults": 12,
+          "search_reward_faults": 21,
+          "search_func_fault_rate": 0.1333,
+          "search_reward_fault_rate": 0.2333,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 90,
+          "random_total_episodes": 90,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 1.0,
+          "num_generations": 20,
+          "time_seconds": 889.0401139040041
+        },
+        {
+          "experiment_id": "sweep_rho_0.05",
+          "mode": "sam",
+          "sam_rho": 0.05,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 3,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 70,
+          "search_func_faults": 7,
+          "search_reward_faults": 15,
+          "search_func_fault_rate": 0.1,
+          "search_reward_fault_rate": 0.2143,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 67,
+          "random_total_episodes": 70,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9571,
+          "num_generations": 20,
+          "time_seconds": 913.81665620899
+        },
+        {
+          "experiment_id": "sweep_rho_0.1",
+          "mode": "sam",
+          "sam_rho": 0.1,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 6,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 70,
+          "search_func_faults": 3,
+          "search_reward_faults": 19,
+          "search_func_fault_rate": 0.0429,
+          "search_reward_fault_rate": 0.2714,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 68,
+          "random_total_episodes": 70,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9714,
+          "num_generations": 20,
+          "time_seconds": 971.6598214859987
+        },
+        {
+          "experiment_id": "sweep_rho_0.2",
+          "mode": "sam",
+          "sam_rho": 0.2,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 8,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 110,
+          "search_func_faults": 26,
+          "search_reward_faults": 18,
+          "search_func_fault_rate": 0.2364,
+          "search_reward_fault_rate": 0.1636,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 108,
+          "random_total_episodes": 110,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9818,
+          "num_generations": 20,
+          "time_seconds": 922.9974984209985
+        }
+      ],
+      "experiments": {
+        "exp1_starla_only": {
+          "experiment_id": "exp1_starla_only",
+          "mode": "starla_only",
+          "sam_rho": null,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 11,
+          "starla_functional_faults": 1,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 0,
+          "starla_archive_size": 1,
+          "search_total_episodes": 110,
+          "search_func_faults": 27,
+          "search_reward_faults": 23,
+          "search_func_fault_rate": 0.2455,
+          "search_reward_fault_rate": 0.2091,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 109,
+          "random_total_episodes": 110,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9909,
+          "num_generations": 20,
+          "time_seconds": 907.8040786630008
+        },
+        "exp2_sam_best_rho": {
+          "experiment_id": "exp2_sam_best_rho",
+          "mode": "sam",
+          "sam_rho": 0.05,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 10,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 150,
+          "search_func_faults": 44,
+          "search_reward_faults": 20,
+          "search_func_fault_rate": 0.2933,
+          "search_reward_fault_rate": 0.1333,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 148,
+          "random_total_episodes": 150,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9867,
+          "num_generations": 20,
+          "time_seconds": 966.0248701079981
+        },
+        "exp3_sam_half_best": {
+          "experiment_id": "exp3_sam_half_best",
+          "mode": "sam",
+          "sam_rho": 0.025,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 7,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 130,
+          "search_func_faults": 25,
+          "search_reward_faults": 19,
+          "search_func_fault_rate": 0.1923,
+          "search_reward_fault_rate": 0.1462,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 129,
+          "random_total_episodes": 130,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9923,
+          "num_generations": 20,
+          "time_seconds": 954.9278191049962
+        },
+        "exp4_sam_double_best": {
+          "experiment_id": "exp4_sam_double_best",
+          "mode": "sam",
+          "sam_rho": 0.1,
+          "sam_fallback_count": 0,
+          "functional_fault_definition_active": "strict",
+          "env": "ALE/Breakout-v5",
+          "agent": "DreamerV3",
+          "seed": 42,
+          "total_budget_episodes": 11,
+          "starla_functional_faults": 0,
+          "starla_functional_faults_legacy": 0,
+          "starla_functional_faults_window": 0,
+          "starla_reward_faults": 1,
+          "starla_archive_size": 1,
+          "search_total_episodes": 130,
+          "search_func_faults": 39,
+          "search_reward_faults": 19,
+          "search_func_fault_rate": 0.3,
+          "search_reward_fault_rate": 0.1462,
+          "random_functional_faults": 0,
+          "random_functional_faults_legacy": 0,
+          "random_functional_faults_window": 0,
+          "random_reward_faults": 126,
+          "random_total_episodes": 130,
+          "random_func_fault_rate": 0.0,
+          "random_reward_fault_rate": 0.9692,
+          "num_generations": 20,
+          "time_seconds": 863.5678893519944
+        }
+      },
+      "conclusion": {
+        "is_pipeline_runnable": true,
+        "is_sam_stable": true,
+        "is_sam_better_than_starla_only": true,
+        "recommended_next_step": "scale_up_budget_and_multi_seed_validation"
+      }
+    }
+  ],
+  "conclusion": {
+    "is_pipeline_runnable": true,
+    "is_sam_stable": true,
+    "is_sam_better_than_starla_only": true,
+    "recommended_next_step": "scale_up_budget_and_multi_seed_validation"
+  }
+}

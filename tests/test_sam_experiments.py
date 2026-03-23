@@ -339,7 +339,7 @@ def test_halfcheetah_config_structure() -> None:
     assert cfg.world_model.model.action_size == 6
     assert cfg.world_model.model.action_type == "continuous"
     assert cfg.policy.model.actor_dist == "normal"
-    assert cfg.env.env_id == "HalfCheetah-v5"
+    assert cfg.env.env_id == "HalfCheetah-v4"
 
 
 # 运行方式: cd /Users/jq/Documents/RL_Testing && pytest tests/test_sam_experiments.py -v
