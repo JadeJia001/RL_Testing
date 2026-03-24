@@ -51,7 +51,7 @@ def _build_halfcheetah_config() -> tuple[EasyDict, EasyDict]:
                 stop_value=4000,
             ),
             policy=dict(
-                cuda=False,
+                cuda=True,
                 random_collect_size=1000,
                 model=dict(
                     action_shape=6,
@@ -81,7 +81,7 @@ def _build_halfcheetah_config() -> tuple[EasyDict, EasyDict]:
             world_model=dict(
                 pretrain=1,
                 train_freq=2,
-                cuda=False,
+                cuda=True,
                 model=dict(
                     state_size=17,
                     obs_type="vector",
@@ -268,8 +268,16 @@ def load_dreamerv3_halfcheetah(
     policy_model = policy if hasattr(policy, "load_state_dict") else getattr(policy, "_model", None)
     if policy_model is None or not hasattr(policy_model, "load_state_dict"):
         raise RuntimeError("Unable to locate policy model load_state_dict for DreamerV3 policy.")
+    use_cuda = bool(cfg.policy.get("cuda", False)) and torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
     policy_model.load_state_dict(torch.load(policy_ckpt, map_location="cpu"))
     world_model.load_state_dict(torch.load(world_model_ckpt, map_location="cpu"))
+    policy_model.to(device)
+    world_model.to(device)
+    if hasattr(policy, "to"):
+        policy.to(device)
+    elif use_cuda and hasattr(policy, "cuda"):
+        policy.cuda()
     policy.eval_mode.reset()
     _close_worker_resources(collector_env, evaluator_env, tb_logger)
     return policy, world_model
