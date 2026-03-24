@@ -23,15 +23,15 @@ def transform(state: Any, noise_low: float = 0.95, noise_high: float = 1.05) -> 
     return new_state
 
 
-def _normalize_action(action: Any) -> int:
-    if isinstance(action, np.ndarray):
-        return int(np.asarray(action).reshape(-1)[0])
-    if isinstance(action, (list, tuple)):
-        return int(action[0])
-    return int(action)
+def _normalize_action(action: Any) -> Any:
+    """Discrete: single scalar -> int. Continuous: vector -> ndarray for env.step."""
+    arr = np.asarray(action)
+    if arr.size == 1:
+        return int(arr.reshape(-1)[0])
+    return arr
 
 
-def _step_env(env: EnvProtocol, action: int) -> tuple[Any, float, bool, dict[str, Any]]:
+def _step_env(env: EnvProtocol, action: Any) -> tuple[Any, float, bool, dict[str, Any]]:
     step_result = env.step(action)
     if len(step_result) == 5:
         obs, reward, terminated, truncated, info = step_result
@@ -67,7 +67,13 @@ def mutate(
     mutpoint = random.randint(3, (len(parent_episode) - 3))
     new_state = transform(parent_episode[mutpoint][0])
     predicted_action, _ = agent.predict(new_state, deterministic=True)
-    if _normalize_action(predicted_action) != int(parent_episode[mutpoint][1]):
+    pred = _normalize_action(predicted_action)
+    orig = parent_episode[mutpoint][1]
+    try:
+        lured = pred != int(orig)
+    except (TypeError, ValueError):
+        lured = not np.array_equal(np.asarray(pred), np.asarray(orig))
+    if lured:
         print("Mutation lured the agent ... ")
 
     new_parent_episode = parent_episode[:mutpoint]
@@ -218,7 +224,7 @@ def re_execute(
         action_selected = episode[i][1]
         if action_selected == "Mut":
             action_selected, _ = agent.predict(episode[i][0], deterministic=True)
-        obs, reward, done, info = _step_env(env, int(action_selected))
+        obs, reward, done, info = _step_env(env, _normalize_action(action_selected))
         episode_reward += reward
         if done:
             break
@@ -229,8 +235,6 @@ def re_execute(
         action, _ = agent.predict(obs, deterministic=True)
         obs, reward, done, info = _step_env(env, _normalize_action(action))
         episode_reward += reward
-        if reward > 201:
-            raise AssertionError("Unexpected reward > 201")
 
     if not done:
         # Episode did not terminate within max_followup_steps;
@@ -240,8 +244,6 @@ def re_execute(
             mem.append(("done", episode_reward))
             return mem
         raise AssertionError("Episode did not terminate during re-execution")
-    if episode_reward > 201:
-        raise AssertionError("Unexpected accumulated reward > 201")
 
     if "mem" not in info:
         raise KeyError("Expected 'mem' in env info during re_execute")
