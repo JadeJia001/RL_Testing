@@ -118,16 +118,24 @@ def _dominates(
     return False
 
 
-def _select_best(tournament_candidates: list[Candidate], objective_uncovered: list[int]) -> Candidate:
+def _select_best(
+    tournament_candidates: list[Candidate], objective_uncovered: list[int]
+) -> Candidate:
     best = tournament_candidates[0]
     for candidate1 in tournament_candidates:
         for candidate2 in tournament_candidates:
-            if _dominates(candidate1.objective_values, candidate2.objective_values, objective_uncovered):
+            if _dominates(
+                candidate1.objective_values,
+                candidate2.objective_values,
+                objective_uncovered,
+            ):
                 best = candidate1
     return best
 
 
-def _tournament_selection(population: list[Candidate], size: int, objective_uncovered: list[int]) -> Candidate:
+def _tournament_selection(
+    population: list[Candidate], size: int, objective_uncovered: list[int]
+) -> Candidate:
     tournament_candidates: list[Candidate] = []
     for _ in range(size):
         index = random.randint(0, len(population) - 1)
@@ -160,7 +168,9 @@ def crossover(
             random_candidate_data = random_candidate.episode
             random_candidate_start = random_candidate.start_state
             for state_index in range(1, len(random_candidate_data) - 3):
-                random_ab = list(np.atleast_1d(abstraction_fn(random_candidate_data[state_index][0])))
+                random_ab = list(
+                    np.atleast_1d(abstraction_fn(random_candidate_data[state_index][0]))
+                )
                 if random_ab == abs_class:
                     matches_list.append(state_index)
                     found_match = True
@@ -191,10 +201,14 @@ def crossover(
 
     if len(offspring1) < 4:
         print(offspring1)
-        raise AssertionError("created offspring 1 in crossover is shorter than expected")
+        raise AssertionError(
+            "created offspring 1 in crossover is shorter than expected"
+        )
     if len(offspring2) < 4:
         print(offspring2)
-        raise AssertionError("created offspring 2 in crossover is shorter than expected")
+        raise AssertionError(
+            "created offspring 2 in crossover is shorter than expected"
+        )
 
     return candidate1, candidate2
 
@@ -222,7 +236,7 @@ def re_execute(
     for i in range(steps_to_mut_point):
         _, _ = agent.predict(obs, deterministic=True)
         action_selected = episode[i][1]
-        if action_selected == "Mut":
+        if isinstance(action_selected, str) and action_selected == "Mut":
             action_selected, _ = agent.predict(episode[i][0], deterministic=True)
         obs, reward, done, info = _step_env(env, _normalize_action(action_selected))
         episode_reward += reward
@@ -248,4 +262,3 @@ def re_execute(
     if "mem" not in info:
         raise KeyError("Expected 'mem' in env info during re_execute")
     return info["mem"]
-
