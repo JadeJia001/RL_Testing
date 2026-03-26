@@ -1,8 +1,0 @@
-{
-  "backend": "halfcheetah",
-  "seed": 0,
-  "max_env_step": 5000,
-  "exp_name": "dreamerv3_halfcheetah_260324_100353",
-  "policy_ckpt": "F:\\Desktop\\RL_Testing\\experiments_mujoco_sam\\checkpoints_halfcheetah\\dreamerv3_policy.pth",
-  "world_model_ckpt": "F:\\Desktop\\RL_Testing\\experiments_mujoco_sam\\checkpoints_halfcheetah\\dreamerv3_world_model.pth"
-}
