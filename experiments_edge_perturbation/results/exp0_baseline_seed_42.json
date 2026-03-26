@@ -1,0 +1,23 @@
+{
+  "experiment_id": "exp0_baseline",
+  "mode": "starla_only",
+  "env": "MountainCar-v0",
+  "agent": "DreamerV3",
+  "seed": 42,
+  "total_budget_episodes": 2,
+  "starla_functional_faults": 0,
+  "starla_reward_faults": 1,
+  "starla_archive_size": 2,
+  "search_total_episodes": 54,
+  "search_func_faults": 0,
+  "search_reward_faults": 15,
+  "search_func_fault_rate": 0.0,
+  "search_reward_fault_rate": 0.2778,
+  "random_functional_faults": 0,
+  "random_reward_faults": 54,
+  "random_total_episodes": 54,
+  "random_func_fault_rate": 0.0,
+  "random_reward_fault_rate": 1.0,
+  "num_generations": 20,
+  "time_seconds": 628.4987926179892
+}

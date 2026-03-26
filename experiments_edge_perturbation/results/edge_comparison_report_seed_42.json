@@ -1,0 +1,45 @@
+{
+  "experiment": "edge_perturbation_comparison",
+  "env": "MountainCar-v0",
+  "seed": 42,
+  "edges": {
+    "baseline": {
+      "search_reward_fault_rate": 0.2778,
+      "search_func_fault_rate": 0.0,
+      "starla_reward_faults": 1,
+      "time_seconds": 628.4987926179892
+    },
+    "E1_perception": {
+      "search_reward_fault_rate": 0.2963,
+      "search_func_fault_rate": 0.0,
+      "starla_reward_faults": 1,
+      "time_seconds": 612.7355033200001
+    },
+    "E2_encoding": {
+      "search_reward_fault_rate": 0.2838,
+      "search_func_fault_rate": 0.0,
+      "starla_reward_faults": 1,
+      "time_seconds": 666.4746214289917
+    },
+    "E3_prediction": {
+      "search_reward_fault_rate": 0.3243,
+      "search_func_fault_rate": 0.0,
+      "starla_reward_faults": 1,
+      "time_seconds": 503.60216452000896
+    },
+    "E4_execution": {
+      "search_reward_fault_rate": 0.2703,
+      "search_func_fault_rate": 0.0135,
+      "starla_reward_faults": 1,
+      "time_seconds": 515.3936505710008
+    }
+  },
+  "vulnerability_profile": {
+    "E1_perception_fault_rate": 0.2963,
+    "E2_encoding_fault_rate": 0.2838,
+    "E3_prediction_fault_rate": 0.3243,
+    "E4_execution_fault_rate": 0.2703
+  },
+  "weakest_edge": "E3_prediction",
+  "strongest_edge": "E4_execution"
+}
