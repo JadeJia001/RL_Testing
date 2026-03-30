@@ -1,0 +1,57 @@
+name: rl_testing
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - git
+
+  # ── PyTorch (CUDA 12.1) ──────────────────────────────
+  - pytorch::pytorch>=2.2.0
+  - pytorch::torchvision
+  - pytorch::pytorch-cuda=12.1
+
+  # ── MuJoCo / DMControl 系统依赖 ─────────────────────
+  - conda-forge::glew
+  - conda-forge::mesalib
+  - conda-forge::glfw
+
+  - pip:
+      # ── STARLA core dependencies ───────────────────────
+      - stable-baselines3>=2.4.0
+      - gymnasium>=1.0.0
+      - pymoo>=0.6.1
+      - scikit-learn>=1.5.0
+      - "numpy>=1.26,<2"
+      - pandas>=2.2.0
+      - matplotlib>=3.9.0
+      - pydantic>=2.7.0
+
+      # ── DI-engine (DreamerV3 backend) ──────────────────
+      - DI-engine
+      - easydict>=1.9
+      - tensorboardX>=2.2
+      - tabulate
+      - yapf==0.29.0
+      - "gym==0.25.1"
+
+      # ── Atari (Breakout) ──────────────────────────────
+      - ale-py
+      - shimmy
+      - "AutoROM[accept-rom-license]"
+
+      # ── MuJoCo (HalfCheetah) ──────────────────────────
+      - mujoco
+      - "gymnasium[mujoco]"
+
+      # ── DMControl (Cheetah-run) ────────────────────────
+      - dm_control
+
+      # ── Image / misc ──────────────────────────────────
+      - Pillow
+      - opencv-python
+      - wandb
+      - pytest>=8.0
